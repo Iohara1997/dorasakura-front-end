@@ -1,0 +1,55 @@
+"""Exposes a URL that specifies the behavior of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behavior of this scalar."""
+  url: String!
+) on SCALAR
+
+type AuthPayload {
+  token: String!
+  username: String!
+  email: String!
+}
+
+type Dorama {
+  id: ID!
+  title: String
+  summary: String
+  episodes: Int
+  genre: String
+  year: Int
+  trailer: String
+  image: String
+}
+
+input DoramaInput {
+  title: String
+  summary: String
+  episodes: Int
+  genre: String
+  year: Int
+  trailer: String
+  image: String
+}
+
+type Mutation {
+  registerUser(username: String!, email: String!, password: String!): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  createDorama(dorama: DoramaInput): Dorama
+  updateDorama(id: String, dorama: DoramaInput): Dorama
+  deleteDorama(id: String): Dorama
+}
+
+type Query {
+  user(id: ID!): User
+  allUsers: [User!]!
+  me: User
+  allDoramas: [Dorama!]!
+  dorama(id: ID!): Dorama
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+}
+
