@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Send+Flowers&display=swap');
+
+.footer {
+  position:absolute;
+  left:50%;
+  top:100%;
+  margin-left:-110px;
+  margin-top:-40px;
+  font-family: 'Send Flowers', cursive;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  background: #FFFFFF url(images/background.jpg) no-repeat right top fixed;
+  background-size: 100% 100%; /* Resize the background image to cover the entire container */;
+  font-family: 'Send Flowers', cursive;
+  
+}
+
+.subTitle{
+  font-size: 20px;
+}
+
+.content {
+  position:absolute;
+  left:35%;
+  top:47%;
+  margin-left:-110px;
+  margin-top:-40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+img {
+  height: 100px;
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+
+@media (max-width: 700px) { 
+  html {
+    height: 100%;
+  }
+  body {
+    height: 100%;
+    overflow: hidden;
+    background: #FFFFFF url(images/background.jpg) no-repeat right top fixed;
+    background-size:  auto; /* Resize the background image to cover the entire container */;
+    
+  }
+}
