@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -27,7 +27,7 @@ import MuiAlert from "@mui/material/Alert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LoginMutation from "../../mutations/LoginMutation";
 import "./index.css";
-import { GC_USERNAME, GC_AUTH_TOKEN } from "../../constants";
+import { GC_AUTH_TOKEN, GC_USERNAME } from "../../constants";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -92,6 +92,7 @@ export function Login() {
   const navigate = useNavigate();
   const theme = createTheme();
   const [remember, setRemember] = useState(false);
+  const isLoggedIn = localStorage.getItem("email");
 
   const rememberMe = (event) => {
     remember ? setRemember(false) : setRemember(true);
@@ -136,21 +137,21 @@ export function Login() {
       e.preventDefault();
       if (remember) localStorage.setItem("email", emailRef.current.value);
       setLoading(true);
+
       LoginMutation(
         emailRef.current.value,
         passwordRef.current.value,
-        (username, token) => {
-          console.log("Login!");
-          localStorage.setItem(GC_USERNAME, username);
-          localStorage.setItem(GC_AUTH_TOKEN, token);
+        (username, token, email) => {
+          window.localStorage.setItem(GC_USERNAME, username);
+          window.localStorage.setItem(GC_AUTH_TOKEN, token);
+          window.localStorage.setItem("email", email);
+          navigate("/home");
         }
       );
-      navigate("/home");
     } catch (error) {
       console.error(error);
       handleClick();
     }
-
     setLoading(false);
   };
 
@@ -161,171 +162,181 @@ export function Login() {
 
   return (
     <>
-      <IconButton
-        color="primary"
-        aria-label="comeback"
-        size="large"
-        component="label"
-        onClick={routeChange}
-      >
-        <ArrowBackIcon style={{ color: "black", fontSize: 50 }} />
-      </IconButton>
-      <ThemeProvider theme={theme}>
-        <Container id="login" component="main" maxWidth="xs">
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              p: 2,
-              backgroundColor: "rgba(24, 23, 23, 0.49)",
-              borderRadius: 5,
-            }}
+      {isLoggedIn ? (
+        <Navigate to="/home" replace={true} />
+      ) : (
+        <>
+          <IconButton
+            color="primary"
+            aria-label="comeback"
+            size="large"
+            component="label"
+            onClick={routeChange}
           >
-            <Avatar
-              src="/images/user.png"
-              sx={{ m: 1, bgcolor: "black", width: 80, height: 80 }}
-            ></Avatar>
-            <Box
-              component="form"
-              onSubmit={handleLogin}
-              noValidate
-              sx={{ mt: 1 }}
-            >
-              <Stack
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                spacing={0}
+            <ArrowBackIcon style={{ color: "black", fontSize: 50 }} />
+          </IconButton>
+          <ThemeProvider theme={theme}>
+            <Container id="login" component="main" maxWidth="xs">
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  p: 2,
+                  backgroundColor: "rgba(24, 23, 23, 0.49)",
+                  borderRadius: 5,
+                }}
               >
-                <StyledTextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Usuário"
-                  name="email"
-                  autoComplete="usuário"
-                  autoFocus
-                  inputRef={emailRef}
-                  color="secondary"
-                  defaultValue={
-                    localStorage.getItem("email")
-                      ? localStorage.getItem("email")
-                      : ""
-                  }
-                />
-                <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
-                  <InputLabel
-                    style={{ color: "white", fontFamily: "Send Flowers" }}
-                    htmlFor="outlined-adornment-password"
-                  >
-                    Senha
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={values.showPassword ? "text" : "password"}
-                    value={values.password}
-                    onChange={handleChange("password")}
-                    inputRef={passwordRef}
-                    color="secondary"
-                    style={{ color: "white", fontFamily: "Send Flowers" }}
-                    sx={[
-                      {
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "white",
-                        },
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "white",
-                        },
-                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "white",
-                        },
-                      },
-                    ]}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                          style={{ color: "white" }}
-                        >
-                          {values.showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Senha"
-                  />
-                </FormControl>
-              </Stack>
-              <FormControl>
-                <FormControlLabel
-                  style={{
-                    margin: 0,
-                    position: "relative",
-                    color: "white",
-                  }}
-                  label=<Box
-                    component="div"
-                    fontSize={18}
-                    style={{ fontFamily: "Send Flowers" }}
-                  >
-                    Lembrar-me
-                  </Box>
-                  control={
-                    <Checkbox
-                      style={{ color: "white" }}
-                      name="remember"
-                      checked={remember}
-                      onChange={rememberMe}
-                    />
-                  }
-                />
-              </FormControl>
-              <Stack
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                spacing={0}
-              >
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={[{ mt: 3, mb: 2 }]}
-                  disabled={loading}
-                  style={{ width: 200, backgroundColor: "black" }}
+                <Avatar
+                  src="/images/user.png"
+                  sx={{ m: 1, bgcolor: "black", width: 80, height: 80 }}
+                ></Avatar>
+                <Box
+                  component="form"
+                  onSubmit={handleLogin}
+                  noValidate
+                  sx={{ mt: 1 }}
                 >
-                  Entrar
-                </Button>
-                <Grid item xs>
-                  <Link
-                    style={{
-                      color: "white",
-                      fontFamily: "Send Flowers",
-                    }}
-                    to="/recuperar-senha"
+                  <Stack
+                    direction="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={0}
                   >
-                    Esqueceu sua senha?
-                  </Link>
-                </Grid>
-              </Stack>
-            </Box>
-            <Copyright sx={{ mt: 4, mb: 4 }} />
-          </Box>
-        </Container>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-            Falha no login
-          </Alert>
-        </Snackbar>
-      </ThemeProvider>
+                    <StyledTextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Usuário"
+                      name="email"
+                      autoComplete="usuário"
+                      autoFocus
+                      inputRef={emailRef}
+                      color="secondary"
+                      defaultValue={
+                        localStorage.getItem("email")
+                          ? localStorage.getItem("email")
+                          : ""
+                      }
+                    />
+                    <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
+                      <InputLabel
+                        style={{ color: "white", fontFamily: "Send Flowers" }}
+                        htmlFor="outlined-adornment-password"
+                      >
+                        Senha
+                      </InputLabel>
+                      <OutlinedInput
+                        id="outlined-adornment-password"
+                        type={values.showPassword ? "text" : "password"}
+                        value={values.password}
+                        onChange={handleChange("password")}
+                        inputRef={passwordRef}
+                        color="secondary"
+                        style={{ color: "white", fontFamily: "Send Flowers" }}
+                        sx={[
+                          {
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "white",
+                            },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "white",
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "white",
+                            },
+                          },
+                        ]}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleClickShowPassword}
+                              onMouseDown={handleMouseDownPassword}
+                              edge="end"
+                              style={{ color: "white" }}
+                            >
+                              {values.showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        label="Senha"
+                      />
+                    </FormControl>
+                  </Stack>
+                  <FormControl>
+                    <FormControlLabel
+                      style={{
+                        margin: 0,
+                        position: "relative",
+                        color: "white",
+                      }}
+                      label=<Box
+                        component="div"
+                        fontSize={18}
+                        style={{ fontFamily: "Send Flowers" }}
+                      >
+                        Lembrar-me
+                      </Box>
+                      control={
+                        <Checkbox
+                          style={{ color: "white" }}
+                          name="remember"
+                          checked={remember}
+                          onChange={rememberMe}
+                        />
+                      }
+                    />
+                  </FormControl>
+                  <Stack
+                    direction="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={0}
+                  >
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={[{ mt: 3, mb: 2 }]}
+                      disabled={loading}
+                      style={{ width: 200, backgroundColor: "black" }}
+                    >
+                      Entrar
+                    </Button>
+                    <Grid item xs>
+                      <Link
+                        style={{
+                          color: "white",
+                          fontFamily: "Send Flowers",
+                        }}
+                        to="/recuperar-senha"
+                      >
+                        Esqueceu sua senha?
+                      </Link>
+                    </Grid>
+                  </Stack>
+                </Box>
+                <Copyright sx={{ mt: 4, mb: 4 }} />
+              </Box>
+            </Container>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert
+                onClose={handleClose}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Falha no login
+              </Alert>
+            </Snackbar>
+          </ThemeProvider>
+        </>
+      )}
     </>
   );
 }

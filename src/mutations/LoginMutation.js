@@ -13,7 +13,7 @@ const mutation = graphql`
 `;
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default (email, password, callback) => {
+export default async (email, password, callback) => {
   const variables = {
     email,
     password,
@@ -22,11 +22,11 @@ export default (email, password, callback) => {
   commitMutation(environment, {
     mutation,
     variables,
-
     onCompleted: (response) => {
       const username = response.login.username;
       const token = response.login.token;
-      callback(username, token);
+      const email = response.login.email;
+      callback(username, token, email);
     },
     onError: (err) => console.error(err),
   });

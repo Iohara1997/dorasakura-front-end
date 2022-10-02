@@ -1,9 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import "./App.css";
 import { RoutesApp } from "./routes.js";
 import { ErrorBoundary } from "react-error-boundary";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Box } from "@mui/material";
+import { RelayEnvironmentProvider } from "react-relay/hooks";
+import environment from "./Environment";
+import { Loading } from "./Loading.js";
 
 function HandlingError({ error, resetErrorBoundary }) {
   const navigate = useNavigate();
@@ -49,8 +52,12 @@ function HandlingError({ error, resetErrorBoundary }) {
 
 export function App() {
   return (
-    <ErrorBoundary FallbackComponent={HandlingError}>
-      <RoutesApp />
-    </ErrorBoundary>
+    <RelayEnvironmentProvider environment={environment}>
+      <ErrorBoundary FallbackComponent={HandlingError}>
+        <Suspense fallback={<Loading />}>
+          <RoutesApp />
+        </Suspense>
+      </ErrorBoundary>
+    </RelayEnvironmentProvider>
   );
 }
