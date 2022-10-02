@@ -1,76 +1,56 @@
-// import React from "react";
-// import "./App.css";
-// import graphql from "babel-plugin-relay/macro";
-// import {
-//   RelayEnvironmentProvider,
-//   loadQuery,
-//   usePreloadedQuery,
-// } from "react-relay/hooks";
-// import RelayEnvironment from "./fetchGraphQL";
-
-// const { Suspense } = React;
-
-// // Define a query
-// const AppAllDoramas = graphql`
-//   query AppAllDoramasQuery {
-//     allDoramas {
-//       id
-//       title
-//       summary
-//       episodes
-//       genre
-//       year
-//       trailer
-//       image
-//     }
-//   }
-// `;
-
-// // Immediately load the query as our app starts. For a real app, we'd move this
-// // into our routing configuration, preloading data as we transition to new routes.
-// const preloadedQuery = loadQuery(RelayEnvironment, AppAllDoramas, {
-//   /* query variables */
-// });
-
-// // Inner component that reads the preloaded query results via `usePreloadedQuery()`.
-// // This works as follows:
-// // - If the query has completed, it returns the results of the query.
-// // - If the query is still pending, it "suspends" (indicates to React that the
-// //   component isn't ready to render yet). This will show the nearest <Suspense>
-// //   fallback.
-// // - If the query failed, it throws the failure error. For simplicity we aren't
-// //   handling the failure case here.
-// function App(props) {
-//   const { allDoramas } = usePreloadedQuery(AppAllDoramas, props.preloadedQuery);
-
-//   return (
-//     <div className="App">
-//       {Object.values(allDoramas).map((result) => {
-//         return <div key={result.id}>{result.title}</div>;
-//       })}
-//     </div>
-//   );
-// }
-
-// // The above component needs to know how to access the Relay environment, and we
-// // need to specify a fallback in case it suspends:
-// // - <RelayEnvironmentProvider> tells child components how to talk to the current
-// //   Relay Environment instance
-// // - <Suspense> specifies a fallback in case a child suspends.
-// function AppRoot(props) {
-//   return (
-//     <RelayEnvironmentProvider environment={RelayEnvironment}>
-//       <Suspense fallback={"Loading..."}>
-//         <App preloadedQuery={preloadedQuery} />
-//       </Suspense>
-//     </RelayEnvironmentProvider>
-//   );
-// }
-
-// export default AppRoot;
-
+import React from "react";
+import "./App.css";
 import { RoutesApp } from "./routes.js";
+import { ErrorBoundary } from "react-error-boundary";
+import { useNavigate } from "react-router-dom";
+import { Button, Container, Box } from "@mui/material";
+
+function HandlingError({ error, resetErrorBoundary }) {
+  const navigate = useNavigate();
+  const navigateTo = () => {
+    navigate("/");
+  };
+  if (error.message.includes("You are not authenticated!"))
+    return (
+      <Container id="alert" component="main" maxWidth="xs">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            p: 2,
+            backgroundColor: "rgba(24, 23, 23, 0.49)",
+            borderRadius: 5,
+            color: "white",
+          }}
+        >
+          <h1>Alguma coisa deu errado:</h1>
+          <h2>Usuário não autenticado.</h2>
+          <p>Você precisa estar logado para continuar nesta página.</p>
+          <Button
+            onClick={() => {
+              resetErrorBoundary();
+              navigateTo();
+            }}
+            style={{
+              borderRadius: 35,
+              backgroundColor: "black",
+              margin: 15,
+              width: 200,
+            }}
+            variant="contained"
+          >
+            Início
+          </Button>
+        </Box>
+      </Container>
+    );
+}
 
 export function App() {
-  return <RoutesApp />;
+  return (
+    <ErrorBoundary FallbackComponent={HandlingError}>
+      <RoutesApp />
+    </ErrorBoundary>
+  );
 }

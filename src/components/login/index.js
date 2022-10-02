@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom"; /* @ts-ignore */
-// import { useAuth } from "./AuthContext.tsx";
+import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -26,7 +25,9 @@ import { styled } from "@mui/material/styles";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LoginMutation from "../../mutations/LoginMutation";
 import "./index.css";
+import { GC_USERNAME, GC_AUTH_TOKEN } from "../../constants";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -86,7 +87,6 @@ function Copyright(props) {
 
 export function Login() {
   const [loading, setLoading] = useState(false);
-  // const { login } = useAuth();
   const emailRef = useRef();
   const passwordRef = useRef();
   const navigate = useNavigate();
@@ -136,8 +136,16 @@ export function Login() {
       e.preventDefault();
       if (remember) localStorage.setItem("email", emailRef.current.value);
       setLoading(true);
-      // await login(emailRef.current.value, passwordRef.current.value);
-      navigate("/");
+      LoginMutation(
+        emailRef.current.value,
+        passwordRef.current.value,
+        (username, token) => {
+          console.log("Login!");
+          localStorage.setItem(GC_USERNAME, username);
+          localStorage.setItem(GC_AUTH_TOKEN, token);
+        }
+      );
+      navigate("/home");
     } catch (error) {
       console.error(error);
       handleClick();

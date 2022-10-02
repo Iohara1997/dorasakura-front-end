@@ -2,7 +2,7 @@ import React from "react";
 // import { Link } from "react-router-dom";
 import "./index.css";
 import line from "./images/line.png";
-import Button from "@mui/material/Button";
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export const Start = () => {
