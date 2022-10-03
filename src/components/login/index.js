@@ -1,31 +1,34 @@
 import * as React from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useRef, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Container from "@mui/material/Container";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import { Stack } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputAdornment from "@mui/material/InputAdornment";
-import { outlinedInputClasses } from "@mui/material/OutlinedInput";
-import { inputLabelClasses } from "@mui/material/InputLabel";
-import { styled } from "@mui/material/styles";
-import Snackbar from "@mui/material/Snackbar";
+import {
+  Box,
+  Typography,
+  Avatar,
+  TextField,
+  createTheme,
+  ThemeProvider,
+  Container,
+  FormControlLabel,
+  Checkbox,
+  Grid,
+  Button,
+  Stack,
+  FormControl,
+  InputLabel,
+  IconButton,
+  OutlinedInput,
+  InputAdornment,
+  outlinedInputClasses,
+  inputLabelClasses,
+  styled,
+  Snackbar,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import MuiAlert from "@mui/material/Alert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import LoginMutation from "../../mutations/LoginMutation";
+import { LoginRequest } from "../../mutations/LoginMutation";
+import { useMutation } from "react-relay";
 import "./index.css";
 import { GC_AUTH_TOKEN, GC_USERNAME } from "../../constants";
 
@@ -93,6 +96,7 @@ export function Login() {
   const theme = createTheme();
   const [remember, setRemember] = useState(false);
   const isLoggedIn = localStorage.getItem("email");
+  const [commit, isInFlight] = useMutation(LoginRequest);
 
   const rememberMe = (event) => {
     remember ? setRemember(false) : setRemember(true);
@@ -137,17 +141,22 @@ export function Login() {
       e.preventDefault();
       if (remember) localStorage.setItem("email", emailRef.current.value);
       setLoading(true);
-
-      LoginMutation(
-        emailRef.current.value,
-        passwordRef.current.value,
-        (username, token, email) => {
-          window.localStorage.setItem(GC_USERNAME, username);
-          window.localStorage.setItem(GC_AUTH_TOKEN, token);
-          window.localStorage.setItem("email", email);
-          navigate("/home");
-        }
-      );
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      commit({
+        variables: {
+          email: emailRef.current.value,
+          password: passwordRef.current.value,
+        },
+        onCompleted(data) {
+          window.localStorage.setItem(GC_USERNAME, data.login.username);
+          window.localStorage.setItem(GC_AUTH_TOKEN, data.login.token);
+          window.localStorage.setItem("email", data.login.email);
+          navigate("../home", { replace: true });
+        },
+      });
+      if (isInFlight) {
+        console.log(isInFlight);
+      }
     } catch (error) {
       console.error(error);
       handleClick();
@@ -155,15 +164,10 @@ export function Login() {
     setLoading(false);
   };
 
-  const routeChange = () => {
-    let path = `/`;
-    navigate(path);
-  };
-
   return (
     <>
       {isLoggedIn ? (
-        <Navigate to="/home" replace={true} />
+        <Navigate to={"/home"} />
       ) : (
         <>
           <IconButton
@@ -171,7 +175,6 @@ export function Login() {
             aria-label="comeback"
             size="large"
             component="label"
-            onClick={routeChange}
           >
             <ArrowBackIcon style={{ color: "black", fontSize: 50 }} />
           </IconButton>
@@ -225,7 +228,7 @@ export function Login() {
                         style={{ color: "white", fontFamily: "Send Flowers" }}
                         htmlFor="outlined-adornment-password"
                       >
-                        Senha
+                        Senha *
                       </InputLabel>
                       <OutlinedInput
                         id="outlined-adornment-password"

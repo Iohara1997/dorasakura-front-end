@@ -11,7 +11,8 @@ import { Loading } from "./Loading.js";
 function HandlingError({ error, resetErrorBoundary }) {
   const navigate = useNavigate();
   const navigateTo = () => {
-    navigate("/");
+    navigate("../");
+    navigate(0);
   };
   if (error.message.includes("You are not authenticated!"))
     return (

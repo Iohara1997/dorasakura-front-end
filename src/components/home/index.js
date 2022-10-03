@@ -26,7 +26,6 @@ function ListDoramas(props) {
   );
 
   const { allDoramas } = response;
-
   return (
     <>
       <div className="home">

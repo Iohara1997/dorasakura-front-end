@@ -9,7 +9,7 @@ export const Start = () => {
   const isLoggedIn = localStorage.getItem("email");
 
   const routeChange = (path) => {
-    navigate(path);
+    navigate("../" + path);
   };
   return (
     <>

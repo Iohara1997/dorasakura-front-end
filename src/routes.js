@@ -8,9 +8,9 @@ export function RoutesApp() {
   return (
     <Routes>
       <Route element={<Start />} path="/" exact />
-      <Route element={<Login />} path="/login" />
-      <Route element={<Register />} path="/register" />
-      <Route element={<Home />} path="/home" />
+      <Route element={<Login />} path="/login" exact />
+      <Route element={<Register />} path="/register" exact />
+      <Route element={<Home />} path="/home" exact />
     </Routes>
   );
 }
