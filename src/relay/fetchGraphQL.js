@@ -1,4 +1,4 @@
-import { GC_AUTH_TOKEN } from "./constants";
+import { GC_AUTH_TOKEN } from "../constants";
 
 export async function fetchGraphQL(
   operation,

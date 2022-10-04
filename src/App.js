@@ -5,8 +5,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Box } from "@mui/material";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
-import environment from "./Environment";
-import { Loading } from "./Loading.js";
+import { createTheme, ThemeProvider } from "@mui/material";
+import environment from "./relay/Environment";
+import { Loading } from "./components/Loading/index";
+import { SnackBarProvider } from "./contexts/snackBarContext";
 
 function HandlingError({ error, resetErrorBoundary }) {
   const navigate = useNavigate();
@@ -52,13 +54,18 @@ function HandlingError({ error, resetErrorBoundary }) {
 }
 
 export function App() {
+  const theme = createTheme();
   return (
     <RelayEnvironmentProvider environment={environment}>
-      <ErrorBoundary FallbackComponent={HandlingError}>
-        <Suspense fallback={<Loading />}>
-          <RoutesApp />
-        </Suspense>
-      </ErrorBoundary>
+      <SnackBarProvider>
+        <ThemeProvider theme={theme}>
+          <ErrorBoundary FallbackComponent={HandlingError}>
+            <Suspense fallback={<Loading />}>
+              <RoutesApp />
+            </Suspense>
+          </ErrorBoundary>
+        </ThemeProvider>
+      </SnackBarProvider>
     </RelayEnvironmentProvider>
   );
 }
