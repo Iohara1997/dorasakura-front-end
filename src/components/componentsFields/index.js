@@ -24,6 +24,7 @@ export const StyledTextField = styled(TextField)({
     },
   [`& .${outlinedInputClasses.input}`]: {
     fontFamily: "Send Flowers",
+    fontSize: 24,
     color: "white",
   },
   [`&:hover .${outlinedInputClasses.input}`]: {
@@ -36,6 +37,8 @@ export const StyledTextField = styled(TextField)({
   [`& .${inputLabelClasses.outlined}`]: {
     fontFamily: "Send Flowers",
     color: "white",
+    fontSize: 24,
+    paddingLeft: 3,
   },
   [`&:hover .${inputLabelClasses.outlined}`]: {
     color: "white",
@@ -66,7 +69,7 @@ export const IconButtonCustom = (props) => {
 export const Copyright = (props) => {
   return (
     <Typography
-      sx={{ mt: 4, mb: 4 }}
+      sx={{ mt: 1, mb: 1 }}
       variant="body2"
       color="white"
       style={{ fontFamily: "Send Flowers" }}

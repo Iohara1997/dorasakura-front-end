@@ -44,11 +44,12 @@ export function Login() {
   const [commit, isInFlight] = useMutation(LoginRequest);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const { openSnackBar, showMessagesSnackBar } = useSnack();
+  const { openSnackBar, setOpenSnackBar, showMessagesSnackBar } = useSnack();
 
   useEffect(() => {
     if (showMessagesSnackBar) setMessage(showMessagesSnackBar);
-  }, [showMessagesSnackBar]);
+    if (openSnackBar) setOpen(true);
+  }, [showMessagesSnackBar, openSnackBar]);
 
   const rememberMe = (event) => {
     remember ? setRemember(false) : setRemember(true);
@@ -86,6 +87,7 @@ export function Login() {
     }
 
     setOpen(false);
+    setOpenSnackBar(false);
   };
 
   const handleLogin = async (e) => {
@@ -153,12 +155,7 @@ export function Login() {
                   height: 80,
                 }}
               ></PersonIcon>
-              <Box
-                component="form"
-                onSubmit={handleLogin}
-                noValidate
-                sx={{ mt: 1 }}
-              >
+              <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
                 <Stack
                   direction="column"
                   justifyContent="center"
@@ -184,7 +181,12 @@ export function Login() {
                   />
                   <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
                     <InputLabel
-                      style={{ color: "white", fontFamily: "Send Flowers" }}
+                      style={{
+                        color: "white",
+                        fontFamily: "Send Flowers",
+                        fontSize: 24,
+                        paddingLeft: 3,
+                      }}
                       htmlFor="outlined-adornment-password"
                       required
                     >
@@ -197,7 +199,11 @@ export function Login() {
                       onChange={handleChange("password")}
                       inputRef={passwordRef}
                       color="secondary"
-                      style={{ color: "white", fontFamily: "Send Flowers" }}
+                      style={{
+                        color: "white",
+                        fontFamily: "Send Flowers",
+                        fontSize: 24,
+                      }}
                       sx={[
                         {
                           "& .MuiOutlinedInput-notchedOutline": {
@@ -288,11 +294,7 @@ export function Login() {
               <Copyright />
             </Box>
           </Container>
-          <Snackbar
-            open={open || openSnackBar}
-            autoHideDuration={6000}
-            onClose={handleClose}
-          >
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
               {message}
             </Alert>

@@ -12,6 +12,7 @@ import {
   IconButton,
   Button,
   Snackbar,
+  Typography,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import {
@@ -24,6 +25,9 @@ import { useMutation } from "react-relay";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { RegisterUser } from "../../mutations/RegisterUserMutation";
 import { useSnack } from "../../contexts/snackBarContext";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { validationForm } from "../../validations/formValidation";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -40,6 +44,14 @@ export const Register = () => {
   const navigate = useNavigate();
   const [commit, isInFlight] = useMutation(RegisterUser);
   const { setOpenSnackBar, setMessageSnackBar } = useSnack();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationForm),
+  });
 
   const handleSnackBar = (messageActual, typeActual) => {
     setOpen(true);
@@ -78,8 +90,8 @@ export const Register = () => {
 
   const handleRegister = async (e) => {
     try {
-      e.preventDefault();
       setLoading(true);
+      console.log(passwordRef.current.value);
       commit({
         variables: {
           email: emailRef.current.value,
@@ -137,9 +149,8 @@ export const Register = () => {
             }}
           ></HowToRegIcon>
           <Box
+            onSubmit={handleSubmit(handleRegister)}
             component="form"
-            onSubmit={handleRegister}
-            noValidate
             sx={{ mt: 1 }}
           >
             <Stack
@@ -149,46 +160,72 @@ export const Register = () => {
               spacing={2}
               width={300}
             >
-              <StyledTextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email"
-                name="email"
-                autoComplete="usuário"
-                autoFocus
-                inputRef={emailRef}
-                color="secondary"
-              />
-              <StyledTextField
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="Nome"
-                name="username"
-                autoComplete="Nome"
-                autoFocus
-                inputRef={username}
-                color="secondary"
-              />
+              <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
+                <StyledTextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email"
+                  name="email"
+                  autoComplete="usuário"
+                  autoFocus
+                  inputRef={emailRef}
+                  color="secondary"
+                  {...register("email")}
+                  error={errors.email ? true : false}
+                />
+                <Typography variant="subtitle2" color="#b30000">
+                  {errors.email?.message}
+                </Typography>
+              </FormControl>
+
+              <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
+                <StyledTextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Nome"
+                  name="username"
+                  autoComplete="Nome"
+                  autoFocus
+                  inputRef={username}
+                  color="secondary"
+                  {...register("username")}
+                  error={errors.username ? true : false}
+                />
+                <Typography variant="subtitle2" color="#b30000">
+                  {errors.username?.message}
+                </Typography>
+              </FormControl>
+
               <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
                 <InputLabel
-                  style={{ color: "white", fontFamily: "Send Flowers" }}
+                  style={{
+                    color: "white",
+                    fontFamily: "Send Flowers",
+                    fontSize: 24,
+                    paddingLeft: 3,
+                  }}
                   htmlFor="outlined-adornment-password"
                   required
                 >
                   Senha
                 </InputLabel>
                 <OutlinedInput
-                  id="outlined-adornment-password"
+                  className="outlined-adornment-password"
                   type={values.showPassword ? "text" : "password"}
-                  value={values.password}
                   onChange={handleChange("password")}
                   inputRef={passwordRef}
                   color="secondary"
-                  style={{ color: "white", fontFamily: "Send Flowers" }}
+                  {...register("password")}
+                  error={errors.password ? true : false}
+                  style={{
+                    color: "white",
+                    fontFamily: "Send Flowers",
+                    fontSize: 24,
+                  }}
                   sx={[
                     {
                       "& .MuiOutlinedInput-notchedOutline": {
@@ -221,6 +258,74 @@ export const Register = () => {
                   }
                   label="Senha"
                 />
+                <Typography variant="subtitle2" color="#b30000">
+                  {errors.password?.message}
+                </Typography>
+              </FormControl>
+              <FormControl
+                fullWidth
+                sx={{ m: 1 }}
+                style={{ marginTop: 30, marginBottom: 30 }}
+                variant="outlined"
+              >
+                <InputLabel
+                  style={{
+                    color: "white",
+                    fontFamily: "Send Flowers",
+                    fontSize: 24,
+                    paddingLeft: 3,
+                  }}
+                  htmlFor="outlined-adornment-password"
+                  required
+                >
+                  Confirme a senha
+                </InputLabel>
+                <OutlinedInput
+                  className="outlined-adornment-password"
+                  color="secondary"
+                  type={values.showPassword ? "text" : "password"}
+                  style={{
+                    color: "white",
+                    fontFamily: "Send Flowers",
+                    fontSize: 24,
+                  }}
+                  {...register("confirmPassword")}
+                  error={errors.confirmPassword ? true : false}
+                  sx={[
+                    {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white",
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white",
+                      },
+                    },
+                  ]}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        style={{ color: "white" }}
+                      >
+                        {values.showPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="ConfirmeSenha"
+                />
+                <Typography variant="subtitle2" color="#b30000">
+                  {errors.confirmPassword?.message}
+                </Typography>
               </FormControl>
               <Button
                 type="submit"
