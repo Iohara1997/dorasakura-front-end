@@ -107,6 +107,11 @@ export const Register = () => {
         onError(error) {
           if (error.message.includes("Incorrect password")) {
             handleSnackBar("Credenciais inválidas.", "error");
+          } else if (error.message.includes("User already exists")) {
+            handleSnackBar(
+              "Usuário já existe com e-mail e/ou nome informados.",
+              "error"
+            );
           } else {
             console.error(error);
             throw new Error();
