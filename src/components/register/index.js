@@ -91,7 +91,6 @@ export const Register = () => {
   const handleRegister = async (e) => {
     try {
       setLoading(true);
-      console.log(passwordRef.current.value);
       commit({
         variables: {
           email: emailRef.current.value,
@@ -200,7 +199,12 @@ export const Register = () => {
                 </Typography>
               </FormControl>
 
-              <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
+              <FormControl
+                fullWidth
+                sx={{ m: 1 }}
+                style={{ marginTop: 40, marginBottom: 15 }}
+                variant="outlined"
+              >
                 <InputLabel
                   style={{
                     color: "white",

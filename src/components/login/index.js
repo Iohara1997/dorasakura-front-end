@@ -14,6 +14,7 @@ import {
   OutlinedInput,
   InputAdornment,
   Snackbar,
+  Typography,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import PersonIcon from "@mui/icons-material/Person";
@@ -28,6 +29,9 @@ import {
   Copyright,
 } from "../componentsFields";
 import { useSnack } from "../../contexts/snackBarContext";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { validationForm } from "../../validations/formValidation";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -45,6 +49,14 @@ export function Login() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const { openSnackBar, setOpenSnackBar, showMessagesSnackBar } = useSnack();
+
+  let {
+    register,
+    handleLogin,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationForm),
+  });
 
   useEffect(() => {
     if (showMessagesSnackBar) setMessage(showMessagesSnackBar);
@@ -90,9 +102,9 @@ export function Login() {
     setOpenSnackBar(false);
   };
 
-  const handleLogin = async (e) => {
+  handleLogin = async (e) => {
+    console.log("chamei");
     try {
-      e.preventDefault();
       if (remember) {
         localStorage.setItem("emailRemember", emailRef.current.value);
       }
@@ -165,23 +177,31 @@ export function Login() {
                   alignItems="center"
                   spacing={0}
                 >
-                  <StyledTextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="E-mail"
-                    name="email"
-                    autoComplete="e-mail"
-                    autoFocus
-                    inputRef={emailRef}
-                    color="secondary"
-                    defaultValue={
-                      localStorage.getItem("emailRemember")
-                        ? localStorage.getItem("emailRemember")
-                        : ""
-                    }
-                  />
+                  <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
+                    <StyledTextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="E-mail"
+                      name="email"
+                      autoComplete="e-mail"
+                      autoFocus
+                      inputRef={emailRef}
+                      color="secondary"
+                      {...register("email")}
+                      error={errors.email ? true : false}
+                      defaultValue={
+                        localStorage.getItem("emailRemember")
+                          ? localStorage.getItem("emailRemember")
+                          : ""
+                      }
+                    />
+                    <Typography variant="subtitle2" color="#b30000">
+                      {errors.email?.message}
+                    </Typography>
+                  </FormControl>
+
                   <FormControl fullWidth sx={{ m: 1 }} variant="outlined">
                     <InputLabel
                       style={{
@@ -198,10 +218,11 @@ export function Login() {
                     <OutlinedInput
                       id="outlined-adornment-password"
                       type={values.showPassword ? "text" : "password"}
-                      value={values.password}
                       onChange={handleChange("password")}
                       inputRef={passwordRef}
                       color="secondary"
+                      {...register("password")}
+                      error={errors.password ? true : false}
                       style={{
                         color: "white",
                         fontFamily: "Send Flowers",
@@ -239,6 +260,9 @@ export function Login() {
                       }
                       label="Senha"
                     />
+                    <Typography variant="subtitle2" color="#b30000">
+                      {errors.password?.message}
+                    </Typography>
                   </FormControl>
                 </Stack>
                 <FormControl>

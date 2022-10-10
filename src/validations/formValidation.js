@@ -10,7 +10,7 @@ export const validationForm = Yup.object().shape({
     .email("Email inválido"),
   password: Yup.string()
     .required("Senha deve estar preenchida.")
-    .min(6, "Senha deve ter ao menos 3 caracteres.")
+    .min(6, "Senha deve ter ao menos 6 caracteres.")
     .max(40, "Senha não deve exceder mais de 40 caracteres."),
   confirmPassword: Yup.string()
     .required("Confirme a senha.")
