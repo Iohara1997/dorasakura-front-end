@@ -7,7 +7,7 @@ import { Button, Container, Box } from "@mui/material";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
 import { createTheme, ThemeProvider } from "@mui/material";
 import environment from "./relay/Environment";
-import { Loading } from "./components/Loading/index";
+import { Loading } from "./components/loading/index";
 import { SnackBarProvider } from "./contexts/snackBarContext";
 
 function HandlingError({ error, resetErrorBoundary }) {

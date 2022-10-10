@@ -109,7 +109,10 @@ export function Login() {
           navigate("../home", { replace: true });
         },
         onError(error) {
-          if (error.message.includes("Incorrect password")) {
+          if (
+            error.message.includes("Incorrect password") ||
+            error.message.includes("No user with that email")
+          ) {
             handleSnackBar("Credenciais inválidas.", "error");
           } else {
             console.error(error);
